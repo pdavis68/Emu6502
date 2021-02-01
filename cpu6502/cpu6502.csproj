@@ -8,4 +8,8 @@
     <DefineConstants>TRACE;CMOS_INDRECT_JMP_FIX </DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove=".gitignore" />
+  </ItemGroup>
+
 </Project>
