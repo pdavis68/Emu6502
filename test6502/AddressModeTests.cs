@@ -3,7 +3,7 @@ using Xunit;
 
 namespace test6502
 {
-    public class ADdressModeTests : CPUTest
+    public class AddressModeTests : CPUTest
     {
         [Fact]
         public void AddressMode_ACC()
