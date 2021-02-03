@@ -43,6 +43,36 @@ namespace test6502.InstructionTests
             Assert.Equal(newVal, cpu.Accumulator);
         }
 
+
+        [Theory]
+        [InlineData(0x00,0x00,0x00)]
+        [InlineData(0x11, 0x11, 0x22)]
+        [InlineData(0x11, 0x12, 0x23)]
+        [InlineData(0x21, 0x02, 0x23)]
+        [InlineData(0x44, 0x44, 0x88)]
+        [InlineData(0x44, 0x66, 0x10)]
+        public void OpCode_ADC_additional1(byte val1, byte val2, byte val3)
+        {
+            CPU cpu = new CPU();
+            cpu.RAM = GetCleanRam();
+            byte[] program = GetProgramData("f8 a9 00 69 00");
+            program[2] = val1;
+            program[4] = val2;
+            cpu.LoadProgram(0x600, program);
+            cpu.InstructionPointer = 0x600;
+
+            try
+            {
+                cpu.Run(100);
+            }
+            catch (CPUBreakException)
+            {
+                Assert.Equal(val3 > 128, cpu.NegativeFlag);
+                Assert.True(cpu.DecimalFlag);
+                Assert.Equal(val3 < (val1 + val2), cpu.CarryFlag);
+            }
+        }
+
         private byte PerformADC(byte val, byte accumulator, bool carry_flag, bool decimal_flag)
         {
             if (decimal_flag)
