@@ -4,6 +4,4 @@ _ReSharper.*
 bin
 obj
 packages
-/.vs/Emu6502/v16/TestStore/0/227.testlog
-/.vs/Emu6502/v16/TestStore/0/testlog.manifest
-/.vs/Emu6502/v16/TestStore/0/000.testlog
+.vs
