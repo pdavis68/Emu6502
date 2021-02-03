@@ -1,6 +1,5 @@
 ﻿using System;
-
-
+using System.Diagnostics;
 
 namespace cpu6502
 {
@@ -193,12 +192,25 @@ namespace cpu6502
         public int ExecuteNextInstruction()
         {
             int nCycles = 0;
+#if TRACE_ON
+            ushort ip = _ip;
+#endif
+
             Instruction instruction = GetNextInstruction();
-            if (instruction.Instr == 0x00)
+            if (instruction.Instr == 0x00 || IllegalOpCode)
             {
                 throw new CPUBreakException();
             }
             instruction.Execute();
+
+#if TRACE_ON
+            string opcode = instruction.OpCode.Method.Name;
+            string addressmode = instruction.AddressMode.Method.Name;
+
+            Debug.WriteLine($"0x{ip:X4} - 0x{instruction.Instr:X2} - {opcode}   {addressmode}  A: {_a:X2} X: {_x:X2} Y: {_y:X2}");
+#endif
+
+
             return nCycles;
         }
 
@@ -208,7 +220,7 @@ namespace cpu6502
         }
 
 
-        #region AddressModes
+#region AddressModes
 
         public ushort AddressMode_ACC()
         {
@@ -309,10 +321,10 @@ namespace cpu6502
             return addr;
         }
 
-        #endregion
+#endregion
 
 
-        #region OpCodes
+#region OpCodes
 
         public void OpCode_ILLEGAL(ushort data)
         {
@@ -331,12 +343,12 @@ namespace cpu6502
                 {
                     tmp += 6;
                 }
-                SetNegative((tmp & 0x80) > 0);
                 SetOverflow((!(((_a ^ val) & 0x80) > 0) && (((_a ^ tmp) & 0x80) > 0)));
                 if (tmp > 0x99)
                 {
                     tmp += 96;
                 }
+                SetNegative((tmp & 0x80) > 0);
                 SetCarry(tmp > 0x99);
             }
             else
@@ -821,10 +833,10 @@ namespace cpu6502
             _a = val;
         }
 
-        #endregion
+#endregion
 
 
-        #region Private Methods
+#region Private Methods
 
         /// <summary>
         /// Made into a function so we can potentially add events 
@@ -1053,6 +1065,6 @@ namespace cpu6502
 
         }
 
-        #endregion
+#endregion
     }
 }
